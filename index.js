@@ -17,7 +17,9 @@ const User = mongoose.model('users', {
   Name: String,
   Lastname: String,
 });
-
+app.get('/', async (req, res) => {
+  res.send('Hello World');
+})
 // เส้นทางสำหรับการลงทะเบียนผู้ใช้
 app.post('/api/register', async (req, res) => {
   try {
