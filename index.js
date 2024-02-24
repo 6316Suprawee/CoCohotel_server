@@ -25,14 +25,20 @@ app.post('/api/register', async (req, res) => {
   try {
     console.log('Request body:', req.body); // ตรวจสอบข้อมูลที่ถูกส่งมาจาก client
     const { email,password,confirmPassword,Name,Lastname } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      console.error('Email already exists');
+      return res.status(400).send({err:'err'});
+    }
     const user = new User(req.body);
     await user.save();
     console.log('User saved successfully:', user); // ตรวจสอบข้อมูลผู้ใช้ที่ถูกบันทึกลงใน MongoDB
-    res.status(201).send('User registered successfully');
+    res.status(201).send({err:''});
     return; // ส่ง response แล้วหยุดการทำงานของ function ทันที
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).send('Registration error');
+//    res.status(500).send('Registration error');
+    res.status(500).send({err:'err'});
   }
 
 });
