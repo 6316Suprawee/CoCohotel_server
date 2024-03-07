@@ -31,6 +31,11 @@ const Reservation = mongoose.model('reservations', {
   selectedFile: String,
 });
 
+const Admin = mongoose.model('admins', {
+  username: String,
+  password: String
+});
+
 app.post('/api/register', async (req, res) => {
   try {
     console.log('Request body:', req.body);
@@ -74,6 +79,42 @@ app.get('/api/reservations', async (req, res) => {
     res.status(500).send({ error: 'Error fetching reservations' });
   }
 });
+
+app.post('/api/admin/register', async (req, res) => {
+  try {
+    console.log('Request body:', req.body);
+    const { username, password } = req.body;
+    const existingAdmin = await Admin.findOne({ username });
+    if (existingAdmin) {
+      console.error('Username already exists');
+      return res.status(400).send({ err: 'Username already exists' });
+    }
+    const admin = new Admin({ username, password });
+    await admin.save();
+    console.log('Admin saved successfully:', admin);
+    res.status(201).send({ message: 'Admin saved successfully' });
+  } catch (error) {
+    console.error('Admin registration error:', error);
+    res.status(500).send({ error: 'Admin registration error' });
+  }
+});
+
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const admin = await Admin.findOne({ username, password });
+    if (!admin) {
+      console.error('Invalid username or password');
+      return res.status(401).send({ error: 'Invalid username or password' });
+    }
+    console.log('Admin authenticated successfully:', admin);
+    res.status(200).send({ message: 'Login successful' });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).send({ error: 'Login error' });
+  }
+});
+
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
