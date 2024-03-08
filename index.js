@@ -80,6 +80,19 @@ app.get('/api/reservations', async (req, res) => {
   }
 });
 
+app.delete('/api/reservations/:id', async (req, res) => {
+  try {
+    const reservationId = req.params.id;
+    await Reservation.findByIdAndDelete(reservationId);
+    console.log('Reservation deleted successfully');
+    res.status(200).send({ message: 'Reservation deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting reservation:', error);
+    res.status(500).send({ error: 'Error deleting reservation' });
+  }
+});
+
+
 app.post('/api/admin/register', async (req, res) => {
   try {
     console.log('Request body:', req.body);
